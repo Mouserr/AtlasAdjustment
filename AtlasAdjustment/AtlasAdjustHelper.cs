@@ -9,7 +9,7 @@ using Object = UnityEngine.Object;
 
 public static class AtlasAdjustHelper
 {
-	public static int CreateUIAtlas(List<Texture2D> images, string atlasName, int? size, UITexturePacker.FreeRectChoiceHeuristic heuristic)
+	public static int CreateUIAtlas(List<Texture2D> images, string atlasName, int? size, out int minSize, UITexturePacker.FreeRectChoiceHeuristic heuristic)
 	{
         string selectionFolder = NGUIEditorTools.GetSelectionFolder();
         if (string.IsNullOrEmpty(atlasName))
@@ -19,7 +19,7 @@ public static class AtlasAdjustHelper
 	    }
 
 	    UIAtlas atlas;
-		string prefabPath = AssetDatabase.GetAllAssetPaths().FirstOrDefault(x => x.EndsWith(atlasName + ".prefab"));
+		string prefabPath = AssetDatabase.GetAllAssetPaths().FirstOrDefault(x => x.EndsWith("/" + atlasName + ".prefab"));
 		if (prefabPath == null)
 		{
 			prefabPath = selectionFolder + atlasName + ".prefab";
@@ -31,7 +31,7 @@ public static class AtlasAdjustHelper
 			atlas = AssetDatabase.LoadAssetAtPath(prefabPath, typeof (UIAtlas)) as UIAtlas;
 		}
 
-        Texture2D newTexture = UpdateUIAtlas(atlas, images, ref size, heuristic);
+        Texture2D newTexture = UpdateUIAtlas(atlas, images, ref size, out minSize, heuristic);
 		var texture = SaveTexture(prefabPath, newTexture);
 		atlas.spriteMaterial.mainTexture = texture;
 		
@@ -80,12 +80,11 @@ public static class AtlasAdjustHelper
 	}
 
 
-	private static Texture2D UpdateUIAtlas(UIAtlas atlas, List<Texture2D> textures, ref int? size, UITexturePacker.FreeRectChoiceHeuristic heuristic)
+    private static Texture2D UpdateUIAtlas(UIAtlas atlas, List<Texture2D> textures, ref int? size, out int minSize, UITexturePacker.FreeRectChoiceHeuristic heuristic)
 	{
 		Debug.Log("***************** Updating atlas " + atlas.name + " - " + DateTime.Now);
 		Rect[] texRects;
-	    int minAtlasSize;
-        Texture2D newTexture = CreateTexture(textures.ToArray(), ref size, 1, out texRects, out minAtlasSize, heuristic);
+        Texture2D newTexture = CreateTexture(textures.ToArray(), ref size, 1, out texRects, out minSize, heuristic);
 		List<UIAtlasMaker.SpriteEntry> sprites = UIAtlasMaker.CreateSprites(textures.Cast<Texture>().ToList());
 		for (int i = 0; i < sprites.Count; i++)
 		{

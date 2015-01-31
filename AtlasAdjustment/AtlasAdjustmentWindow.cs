@@ -45,7 +45,7 @@ public class AtlasAdjustmentWindow : EditorWindow
 
 
         GUILayout.BeginHorizontal();
-        GUILayout.Label("Best packed atlas size");
+        GUILayout.Label("Best packed atlas size without compression");
         GUILayout.Label(packedSize.ToString());
         recalculate = GUILayout.Button("Recalculate");
         GUILayout.EndHorizontal();
@@ -95,7 +95,7 @@ public class AtlasAdjustmentWindow : EditorWindow
 
             try
             {
-                AtlasAdjustHelper.CreateUIAtlas(textures, hDName, maxHDSize > 0 ? maxHDSize : (int?) null, currentHeuristic);
+                AtlasAdjustHelper.CreateUIAtlas(textures, hDName, maxHDSize > 0 ? maxHDSize : (int?) null, out packedSize, currentHeuristic);
             }
             catch (Exception e)
             {
@@ -115,7 +115,7 @@ public class AtlasAdjustmentWindow : EditorWindow
 
             try
             {
-                AtlasAdjustHelper.CreateUIAtlas(textures, sDName, maxSDSize > 0 ? maxSDSize : (int?)null, currentHeuristic);
+                AtlasAdjustHelper.CreateUIAtlas(textures, sDName, maxSDSize > 0 ? maxSDSize : (int?)null, out packedSize, currentHeuristic);
             }
             catch (Exception e)
             {
